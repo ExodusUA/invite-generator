@@ -17,7 +17,7 @@ apiRoutes.get('/', async (req: Request, res: Response) => {
 
     if (response === 'exist') res.status(400).send('ID already exist');
     //else res.redirect(response);
-    else res.send(response);
+    else res.json({ url: response });
 
 });
 
