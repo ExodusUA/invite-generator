@@ -7,7 +7,6 @@ const fs = require('fs');
 const https = require('https');
 
 import apiRoutes from './Routes/apiRoutes';
-import apiController from './Controllers/userController';
 
 import './db/database'
 import './discord/discord'
@@ -21,11 +20,6 @@ app.use(cors());
 
 app.use(apiRoutes)
 
-app.listen(PORT, () => {
-  console.log(`server started on port ${PORT}!`);
-});
-
-/*
 const privateKey = fs.readFileSync('./keys/private.key', 'utf8');
 const certificate = fs.readFileSync('./keys/certificate.crt', 'utf8');
 
@@ -40,5 +34,9 @@ server.listen(PORT, () => {
   console.log("server starting on port: " + PORT)
 });
 
+/*
+app.listen(PORT, () => {
+  console.log(`server started on port ${PORT}!`);
+});
 */
 

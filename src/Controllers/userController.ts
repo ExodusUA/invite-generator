@@ -1,4 +1,3 @@
-import axios from 'axios';
 import User, { IUser } from '../db/models/user';
 import { createServerInvite, checkInviteValidity } from '../discord/discord';
 

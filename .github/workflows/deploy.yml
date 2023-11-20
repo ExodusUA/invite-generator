@@ -1,0 +1,38 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up SSH
+      uses: webfactory/ssh-agent@v0.5.4
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+        known-hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+
+    - name: create env file
+      run: |
+        touch .env
+        echo ENGINE_API_KEY=${{ secrets.ENGINE_API_KEY }} >> .env
+
+    - name: Deploy to VPS
+      run: |
+        set -e
+        mkdir -p $HOME/invite-generator
+        cp -r * $HOME/invite-generator
+        cd $HOME/invite-generator
+        npm install
+        npm install -g typescript  # Install TypeScript globally
+        tsc
+        npm install -g pm2  # Install PM2 globally
+        pm2 delete invite-generator || true
+        pm2 start dist/app.js -f --name invite-generator
