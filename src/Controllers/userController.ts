@@ -1,5 +1,6 @@
 import User, { IUser } from '../db/models/user';
 import { createServerInvite, checkInviteValidity } from '../discord/discord';
+import crypto from 'crypto';
 
 class userController {
 
@@ -11,10 +12,13 @@ class userController {
 
         const inviteLink = await createServerInvite();
 
+        let requestID = await this.generateUniqueRequestId();
+
         const user: IUser = new User({
             inviteID: inviteID,
             discordLink: inviteLink,
-            isDiscordUsed: false
+            isDiscordUsed: false,
+            requestID: requestID,
         });
 
         await user.save();
@@ -42,6 +46,21 @@ class userController {
     async addInviteLink(id: string, link: string) {
         await User.findOneAndUpdate({ inviteID: id }, { discordLink: link });
     }
+
+    async getUnusedInvites() {
+        const data: any = await User.find({ isDiscordUsed: false });
+        return data;
+    }
+
+    async makeInviteUsed(id: string) {
+        await User.findOneAndUpdate({ inviteID: id }, { isDiscordUsed: true });
+    }
+
+    async generateUniqueRequestId() {
+        const randomBytes = crypto.randomBytes(16);
+        const requestId = randomBytes.toString('hex');
+        return requestId.substr(0, 32);
+      }
 
 }
 

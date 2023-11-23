@@ -16,7 +16,6 @@ apiRoutes.get('/', async (req: Request, res: Response) => {
     const response = await UserController.addInviteID(id);
 
     if (response === 'exist') res.status(400).send('ID already exist');
-    //else res.redirect(response);
     else res.json({ url: response });
 
 });

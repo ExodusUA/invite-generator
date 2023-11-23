@@ -1,3 +1,5 @@
+import userController from "../Controllers/userController";
+import apiController from "../Controllers/apiController";
 const { Client, Events, GatewayIntentBits } = require('discord.js');
 
 const client = new Client({
@@ -36,6 +38,29 @@ async function checkInviteValidity(invite: string) {
         return 'used';
     }
 }
+
+async function checkAllInvites() {
+    const UserController = new userController();
+    const APIController = new apiController();
+    const invites = await UserController.getUnusedInvites();
+    console.log(invites)
+    for (const invite of invites) {
+        const linkStatus: any = await checkInviteValidity(invite.discordLink.replace('https://discord.gg/', ''));
+
+        if (linkStatus === 'used') {
+            console.log(`Invite ${invite.discordLink} is used, uid: ${invite.inviteID}`)
+            APIController.treatCoinCallback(invite.inviteID, invite.requestID);
+            UserController.makeInviteUsed(invite.inviteID);
+        }
+    }
+
+}
+
+client.on('guildMemberAdd', async (member: any) => {
+   setTimeout(async () => {
+    checkAllInvites();
+   }, 1000);
+});
 
 client.login(process.env.DISCORD_BOT_TOKEN);
 
